@@ -2,6 +2,11 @@
 Macro to analyse only Jet properties on a Delphes ROOT output
 Dominic Smith 
 Febuary 2014
+
+To run: 
+
+root -l examples/JetAnalysis\(\"delphes_file.root\"\)
+
 */
 
 //------------------------------
