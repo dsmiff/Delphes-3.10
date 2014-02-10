@@ -193,8 +193,8 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
     {
       tower = (Tower*) branchEFlowTower->At(i);
 
-      Eem = 0.0;
-      Ehad = 0.0;
+      Eem = 0.0;           // Electromagnetic tower energy
+      Ehad = 0.0;          // Hadronic tower energy
       skip = kFALSE;
       for(j = 0; j < tower->Particles.GetEntriesFast(); ++j)
       {
@@ -213,17 +213,17 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
           skip = kTRUE;
         }
 
-        if(pdgCode == 11 || pdgCode == 22)
+        if(pdgCode == 11 || pdgCode == 22)         // For electrons and photons
         {
-          Eem += particle->E;
+          Eem += particle->E;                      // Sum the electrons/photons energy
         }
-        else
+        else                                       // Rest detected should be all hadronic
         {
-          Ehad += particle->E;
+          Ehad += particle->E;                     // Sum hadronic particle energy
         }
       }
       if(skip) continue;
-      if(Eem > 0.0 && tower->Eem > 0.0) plots->fTowerDeltaEem->Fill((Eem - tower->Eem)/Eem);
+      if(Eem > 0.0 && tower->Eem > 0.0) plots->fTowerDeltaEem->Fill((Eem - tower->Eem)/Eem); // Compare energy of EM particle at tower with EM energy of tower
       if(Ehad > 0.0 && tower->Ehad > 0.0) plots->fTowerDeltaEhad->Fill((Ehad - tower->Ehad)/Ehad);
     }
 
