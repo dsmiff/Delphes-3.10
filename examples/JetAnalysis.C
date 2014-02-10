@@ -51,9 +51,18 @@ void JetAnalysis(const char *intputFile)
 	    Jet *jet = (Jet*) branchJet->At(j);
 	    histJetPT->Fill(jet->PT);
 	    cout << jet->PT << endl;
-
 	  }
 
+	// Jet Constituents work - needs more looking at
+	/*
+	for(Int_t k=0; k < jet->Constituents.GetEntriesFast(); k++)
+	  {
+	    object = jet->Constituents.At(k);
+	    if(object == 0) continue;
+	    cout << "Jet constituents: " << object << endl;
+	    
+	  }
+	*/
     }
   
   TFile *JetAnalysis = new TFile("JetAnalysis.root","RECREATE");
