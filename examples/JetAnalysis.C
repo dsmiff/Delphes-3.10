@@ -40,7 +40,7 @@ void JetAnalysis(const char *intputFile)
 
   TClonesArray *branchJet = treeReader->UseBranch("Jet");
   TClonesArray *branchGenJet = treeReader->UseBranch("GenJet");
-  // Want to do the same with GenJet to do a purity test
+  
 
 
 
@@ -52,17 +52,13 @@ void JetAnalysis(const char *intputFile)
   TH1 *histGenJetPT = new TH1F("GenJet_PT", "GenJet_P{T}", 100, 0.0, 100.0);
 
 
-
-
-
   for(Int_t i=0; i < numberOfEntries; i++)
     {
       treeReader->ReadEntry(i);
       int JetPT;
 
-      //      cout << "Number of Entries : "  << numberOfEntries << endl;
-
-     
+      cout << "\n***************************" << endl;
+      cout << "\nNEW EVENT [" << i << "]"<< endl;
       
 	for(Int_t j=0; j < branchJet->GetEntriesFast(); j++)
 	  {
@@ -71,33 +67,11 @@ void JetAnalysis(const char *intputFile)
 	    histJetPT->Fill(jet->PT);
 	    cout << jet->PT << endl;
 	  }
-	
+       
 
-
-
-
-	// Jet Constituents work - needs more looking at
-	/*
-	for(Int_t k=0; k < jet->Constituents.GetEntriesFast(); k++)
-	  {
-	    object = jet->Constituents.At(k);
-	    if(object == 0) continue;
-	    cout << "Jet constituents: " << object << endl;
-	    
-	  }
-	
-
-	for(Int_t k=0; k < branchGenJet->GetEntriesFast(); k++)
-         {	   
-	   GenJet *genjet = (GenJet*) branchGenJet->At(k);
-
-	   histGenJetPT->Fill(genjet->PT);
-	   cout << "genjet PT : " << genjet->PT << endl;
-         }
-	*/
 
     }
-  
+
   TFile *JetAnalysis = new TFile("JetAnalysis.root","RECREATE");
   histJetPT->Write();
   //histGenJetPT->Write();
