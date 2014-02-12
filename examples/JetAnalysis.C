@@ -11,6 +11,17 @@ root -l examples/JetAnalysis\(\"delphes_file.root\"\)
 
 //------------------------------
 
+#include "TFile.h"
+#include "TROOT.h"
+#include "TH1.h"
+#include "TTree.h"
+#include "TLeaf.h"
+#include "TChain.h"
+#include "TCanvas.h"
+#include "TBranch.h"
+#include "TClonesArray.h"
+
+
 
 
 void JetAnalysis(const char *intputFile)
@@ -28,14 +39,22 @@ void JetAnalysis(const char *intputFile)
 
 
   TClonesArray *branchJet = treeReader->UseBranch("Jet");
+  TClonesArray *branchGenJet = treeReader->UseBranch("GenJet");
+  // Want to do the same with GenJet to do a purity test
+
+
 
   // Declaring histos
   
   TH1 *histJetPT = new TH1F("Jet_PT", "Jet P_{T}", 100, 0.0, 100.0);
   TH1 *histJetEta = new TH1F("Jet_Eta", "Jet_Eta", 50, -4, 4);
   TH1 *histJetPhi = new TH1F("Jet_Phi", "Jet_Phi", 50, 0, 7);
- 
- 
+  TH1 *histGenJetPT = new TH1F("GenJet_PT", "GenJet_P{T}", 100, 0.0, 100.0);
+
+
+
+
+
   for(Int_t i=0; i < numberOfEntries; i++)
     {
       treeReader->ReadEntry(i);
@@ -52,6 +71,10 @@ void JetAnalysis(const char *intputFile)
 	    histJetPT->Fill(jet->PT);
 	    cout << jet->PT << endl;
 	  }
+	
+
+
+
 
 	// Jet Constituents work - needs more looking at
 	/*
@@ -62,15 +85,21 @@ void JetAnalysis(const char *intputFile)
 	    cout << "Jet constituents: " << object << endl;
 	    
 	  }
+	
+
+	for(Int_t k=0; k < branchGenJet->GetEntriesFast(); k++)
+         {	   
+	   GenJet *genjet = (GenJet*) branchGenJet->At(k);
+
+	   histGenJetPT->Fill(genjet->PT);
+	   cout << "genjet PT : " << genjet->PT << endl;
+         }
 	*/
+
     }
   
   TFile *JetAnalysis = new TFile("JetAnalysis.root","RECREATE");
   histJetPT->Write();
-
+  //histGenJetPT->Write();
 
 }
- 
-
-    
-    
