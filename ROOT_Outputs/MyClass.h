@@ -76,6 +76,12 @@ public :
    TH1F* _phi1;
    TH1F* _phi2;
    TH1F* _phi3;
+   TH1D* _GenJetPThisto;
+   TH1D* _GenJetPt1;
+   TH1D* _GenJetPt2;
+   TH1D* _GenJetPt3;
+   TH1D* _GenJetPt4;
+
 
    // Particles & other declarations
 
@@ -90,8 +96,10 @@ public :
    Double_t TopBoost1, TopBoost2, TopBoost3, TopBoost4;
    Double_t MET;
    std::vector<TLorentzVector> Jets;
+   std::vector<TLorentzVector> GenJets;
    // std::vector<TLorentzVector> TopQuarks;
    TLorentzVector jet;
+   TLorentzVector genjet;
    int nstop = 0;
    int ngluino = 0;
    int njets = 0;
@@ -495,7 +503,7 @@ public :
    virtual int      METAnalysis();
    virtual int      TopAnalysis();
    virtual int      ScalarHTAnalysis();
-
+   virtual int      GenJetAnalysis();
 };
 
 #endif
@@ -506,9 +514,9 @@ MyClass::MyClass(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("tag_1_delphes_events.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("root/delphes_500_300_output.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("tag_1_delphes_events.root");
+         f = new TFile("root/delphes_500_300_output.root");
       }
       f->GetObject("Delphes",tree);
 
