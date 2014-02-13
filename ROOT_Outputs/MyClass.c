@@ -432,7 +432,7 @@ int MyClass::JetAnalysis(){
     if(HT<8) continue;
      _HT->Fill(HT);
     }
-    if(GenJet_PT[k] > 10.){
+    if(GenJet_PT[k] > 20.){
       _h_genjetPt->Fill(GenJet_PT[k]);
     }
     if(abs(Particle_PID[k]) == 6){                    // For top quarks
@@ -463,12 +463,32 @@ int MyClass::JetAnalysis(){
 
 }
 
-/* int MyClass::GenJetAnalysis(){
+int MyClass::GenJetAnalysis()
+{
+  for(unsigned int i=0; i<sizeof(GenJet_PT); i++)
+    {
+   
 
-   INCLUDE CODE TO OBTAIN GEN JET PT AND FEED TO TFile TO LATER BE USED FOR A PURITY TEST
-   GOOD IDEA TO COMPARE GENJET TO JET (CA/ANTI KT/ KT/ ITERATIVE CLUSTERING)
+      if(GenJet_PT[i] < 20) continue;
+      _GenJetPThisto->Fill(GenJet_PT[i]);      // Feed this histo into JetPT TFile -> PURITY
+      // need same cuts , Jet PT > 20 < GenJet PT 
+   
+    genjet.SetPtEtaPhiM(GenJet_PT[i], GenJet_Eta[i], GenJet_Phi[i], GenJet_Mass[i]);         // Arrange jets in order of Pt
+    GenJets.push_back(genjet);
+ }
 
- */
+  sort(GenJets.begin(), GenJets.end(), order_gt());
+  //std::cout << "1st Jet Pt: " << Jets.at(0).Pt() << std::endl;
+
+
+  _GenJetPt1->Fill(GenJets.at(0).Pt());
+  _GenJetPt2->Fill(GenJets.at(1).Pt());
+  _GenJetPt3->Fill(GenJets.at(2).Pt());
+  _GenJetPt4->Fill(GenJets.at(3).Pt());
+
+  GenJets.clear();
+
+}
 
 
 
@@ -552,7 +572,7 @@ void MyClass::Loop()
   TH1::SetDefaultSumw2();
 
   _JetPT = new TH1D("jetPt", "jetPt", 200, 0., 900.);
-  _h_genjetPt = new TH1D("genjetPt", "genjetPt", 200, 0., 200.);
+  _h_genjetPt = new TH1D("genjetPt", "genjetPt", 200, 0., 900.);
   _ttbar_jetpt = new TH1D("ttbar_jetpt", "ttbar_jetpt", 200, 0., 200.);
   _ttbar_genjetpt = new TH1D("ttbar_genjetpt", "ttbar_genjetpt", 200, 0., 200.);
   _tmass = new TH1D("tmass", "tmass", 200, 0., 400.);
@@ -577,10 +597,15 @@ void MyClass::Loop()
   _phi1 = new TH1F("phi1","phi1", 50, 0.0, 7);
   _phi2 = new TH1F("phi2","phi2", 50, 0.0, 7);
   _phi3 = new TH1F("phi3","phi3", 50, 0.0, 7);
+  _GenJetPThisto = new TH1D("GenJetPT", "GenJet_P{T}", 200, 0.0, 900);
+  _GenJetPt1 = new TH1D("GenJetPt1", "GenJetPt1", 200, 0., 900);
+  _GenJetPt2 = new TH1D("GenJetPt2", "GenJetPt2", 200, 0., 900);
+  _GenJetPt3 = new TH1D("GenJetPt3", "GenJetPt3", 200, 0., 900);
+  _GenJetPt4 = new TH1D("GenJetPt4", "GenJetPt4", 200, 0., 900);
 
 
 Long64_t nentries = fChain->GetEntries();
-
+//  Long64_t nentries = 1000;
 
 //Long64_t nents = b_Particle_PID->GetEntries();
 
@@ -607,7 +632,7 @@ int JETANALYSIS = JetAnalysis();
 int METANALYSIS = METAnalysis();
 int TOPANALYSIS = TopAnalysis();
 int SCALARHTANALYSIS = ScalarHTAnalysis();
-
+int GENANALYSIS = GenJetAnalysis();
 
 }
 
@@ -625,6 +650,7 @@ TLegend *leg = new TLegend(0.6,0.7,0.89,0.89);
 c1->Clear();
 TFile *Jet_PT = new TFile("JetPT_tag_1.root", "RECREATE");
 _JetPT->Write();
+_GenJetPThisto->Write();
 
 c2->Clear();
 _tmass->Draw("hist");
@@ -635,7 +661,7 @@ _TopPt->Draw("hist");
 //c3->Print("TopPt.pdf");
 
 c4->Clear();
-TFile *PTgluino_stop = new TFile("PTgluino_MG_500_100.root","RECREATE");
+TFile *PTgluino_stop = new TFile("PTgluino_MG_500_300.root","RECREATE");
 _Top_Gluino->Draw("hist");
 _Top_Gluino->Write();
 _Top_Gluino->SetTitle("P_{T} from stop (500 GeV) and gluino (600 GeV) ");
@@ -650,34 +676,39 @@ leg->Draw();
 c4->Print("PtTopGluino.pdf");
 
 
-TFile *PTstop_top = new TFile("PT_MG_500_100.root", "RECREATE");
+TFile *PTstop_top = new TFile("PT_MG_500_300.root", "RECREATE");
 _Top_Stop->Write();
 
-TFile *f = new TFile("MET_MG_500_100.root", "RECREATE");
+TFile *f = new TFile("MET_MG_500_300.root", "RECREATE");
 _MET_histo->Write();
 
-TFile *g = new TFile("HT_MG_500_100.root", "RECREATE");
+TFile *g = new TFile("HT_MG_500_300.root", "RECREATE");
 _HT->Write();
 
-TFile *ISR = new TFile("ISR_MG_500_100.root", "RECREATE");
+TFile *ISR = new TFile("ISR_MG_500_300.root", "RECREATE");
 _ISR->Write();
 
-TFile *ScalarHT = new TFile("ScalarHT_MG_500_100.root","RECREATE");
+TFile *ScalarHT = new TFile("ScalarHT_MG_500_300.root","RECREATE");
 _ScalarHT->Write();
 
-TFile *JetPt1 = new TFile("LeadingJetPt_MG_500_100.root", "RECREATE");
+TFile *JetsPt1 = new TFile("LeadingJetPt_MG_500_300.root", "RECREATE");
 _JetPt1->Write();
 _JetPt2->Write();
 _JetPt3->Write();
 _JetPt4->Write();
+_GenJetPt1->Write();
+_GenJetPt2->Write();
+_GenJetPt3->Write();
+_GenJetPt4->Write();
 
-TFile *JetLego = new TFile("JetLego_MG_500_100.root", "RECREATE");
+
+TFile *JetLego = new TFile("JetLego_MG_500_300.root", "RECREATE");
 _JetLego1->Write();
 _JetLego2->Write();
 _JetLego3->Write();
 _JetLego4->Write();
 
-TFile *angles = new TFile("angle1_MG_500_100.root","RECREATE");
+TFile *angles = new TFile("angle1_MG_500_300.root","RECREATE");
 _polarangle1->Write();
 _polarangle2->Write();
 _polarangle3->Write();
