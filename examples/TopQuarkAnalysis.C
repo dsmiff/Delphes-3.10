@@ -26,29 +26,214 @@ void TopQuarkAnalysis(const char *inputFile)
   TClonesArray *branchParticle = treeReader->UseBranch("Particle");
 
   GenParticle *particle;
+  GenParticle *MotherParticleW1;
+  GenParticle *MotherParticleW2;
+  GenParticle *MotherParticleW3;
+  GenParticle *MotherParticleW4;
+
+  TLorentzVector top1, top2, top3, top4;
+  TLorentzVector W1, W2, W3, W4;
+  TLorentzVector b1, b2, b3, b4;
+
+  Int_t nw = 0;
+  Int_t nt = 0;
+  Int_t nb = 0;
+
 
   // Declaring histos
 
   TH1 *TopPt = new TH1F("TopPt","Top_P{T}",100, 0.0, 200);
   
+
+  // i is per event
+
   for(Int_t i=0; i < numberOfEntries; i++)
     {
       treeReader->ReadEntry(i);
       int TopPT;
 
+      cout << "" << endl;
+      cout << "NEW ENTRY [" << i << "]" << endl;
+      cout << "" << endl;
+      
+
+      // j is per index of branch Particle
+
       for(Int_t j=0; j < branchParticle->GetEntriesFast(); j++)
 	{
 
+		Int_t count = 0;
+
 	  particle = (GenParticle*) branchParticle->At(j);
 	  pdgCode = TMath::Abs(particle->PID);
+
+	  // If top quark
 
 	  if(pdgCode == 6)
 	    {
 	      TopPt->Fill(particle->PT);
 	      cout << "Top PT : " << particle->PT << endl;
+	      cout << "Top daughters : " << particle->D1 << endl;
 	    }
-	}
-      TopPt->Draw();
+
+	  // Identify W boson
+
+	  if(pdgCode == 24 && nw ==0)
+	    {
+	      MotherParticleW1 = (GenParticle*) branchParticle->At(particle->M1);
+	      MotherpdgCode = TMath::Abs(MotherParticleW1->PID);
+	      cout << "W mother: " << particle->M1 << endl;
+
+	      
+	      W1.SetPx(particle->Px);
+	      W1.SetPy(particle->Py);
+	      W1.SetPz(particle->Pz);
+	      W1.SetE(particle->E);
+
+	      cout << "W1 Px: " << W1.Px() << endl;
+
+	      nw++;
+
+
+
+	      if(MotherpdgCode == 6 && nt==0)
+		{
+		  top1.SetPx(MotherParticleW1->Px);
+		  top1.SetPy(MotherParticleW1->Py);
+		  top1.SetPz(MotherParticleW1->Pz);
+		  top1.SetE(MotherParticleW1->E);
+		  
+		  cout << "GOTCHA!" << endl;
+
+		  nt++;
+		  particle = (GenParticle*) branchParticle->At(j+1);
+		  count++;
+			}
+	   }
+	 
+	 if(pdgCode == 24 && nw==1)
+	 {
+	 	MotherParticleW2 = (GenParticle*) branchParticle->At(particle->M1);
+	 	MotherpdgCode = TMath::Abs(MotherParticleW2->PID);
+	 	cout << "W mother 2: " << particle->M1 << endl;
+
+	 	W2.SetPx(particle->Px);
+	    W2.SetPy(particle->Py);
+	    W2.SetPz(particle->Pz);
+	    W2.SetE(particle->E);
+
+	    cout << "W2 Px: " << W2.Px() << endl;
+
+	    nw++;
+
+
+	    if(MotherpdgCode == 6 && nt == 1)
+	 	{
+	 		top2.SetPx(MotherParticleW2->Px);
+		  	top2.SetPy(MotherParticleW2->Py);
+		  	top2.SetPz(MotherParticleW2->Pz);
+		  	top2.SetE(MotherParticleW2->E);	 		
+
+		  	cout << "Got 2nd top quark" << endl;
+
+		  	nt++;
+		  	particle = (GenParticle*) branchParticle->At(j+1);
+		  	count++;
+
+	 	}
+	 } 
+
+	  if(pdgCode == 24 && nw ==2)
+	 {
+	 	MotherParticleW3 = (GenParticle*) branchParticle->At(particle->M1);
+	 	MotherpdgCode = TMath::Abs(MotherParticleW3->PID);
+	 	cout << "W mother 3: " << particle->M1 << endl;
+
+	 	W3.SetPx(particle->Px);
+	    W3.SetPy(particle->Py);
+	    W3.SetPz(particle->Pz);
+	    W3.SetE(particle->E);
+
+	    cout << "W3 Px: " << W3.Px() << endl;
+
+	    nw++;
+
+
+	    if(MotherpdgCode == 6 && nt == 2)
+	 	{
+	 		top3.SetPx(MotherParticleW3->Px);
+		  	top3.SetPy(MotherParticleW3->Py);
+		  	top3.SetPz(MotherParticleW3->Pz);
+		  	top3.SetE(MotherParticleW3->E);	 		
+
+		  	cout << "Got 3rd top quark" << endl;
+
+		  	nt++;
+		  	particle = (GenParticle*) branchParticle->At(j+1);
+		  	count++;
+	 	}
+	 }
+
+	  if(pdgCode == 24 && nw ==3)
+	 {
+	 	MotherParticleW4 = (GenParticle*) branchParticle->At(particle->M1);
+	 	MotherpdgCode = TMath::Abs(MotherParticleW4->PID);
+	 	cout << "W mother 4: " << particle->M1 << endl;
+
+	 	W4.SetPx(particle->Px);
+	    W4.SetPy(particle->Py);
+	    W4.SetPz(particle->Pz);
+	    W4.SetE(particle->E);
+
+	    cout << "W4 Px: " << W4.Px() << endl;
+
+	    nw++;
+
+
+	    if(MotherpdgCode == 6 && nt == 3)
+	 	{
+	 		top4.SetPx(MotherParticleW4->Px);
+		  	top4.SetPy(MotherParticleW4->Py);
+		  	top4.SetPz(MotherParticleW4->Pz);
+		  	top4.SetE(MotherParticleW4->E);	 		
+
+		  	cout << "Got 4th top quark" << endl;
+
+		  	nt++;
+		  	particle = (GenParticle*) branchParticle->At(j+1);
+		  	count++;
+
+	 	}
+
+	 	if(count == 0){
+	 		particle = (GenParticle*) branchParticle->At(j+1);
+	 	}
+	 }
+
+/*
+	  if(pdgCode == 5)
+	    {
+	      MotherParticle = (GenParticle*) branchParticle->At(particle->M1);
+	      MotherpdgCode = TMath::Abs(MotherParticle->PID);
+
+	      b1.SetPx(particle->Px);
+	      b1.SetPy(particle->Py);
+	      b1.SetPz(particle->Pz);
+	      b1.SetE(particle->E);
+	    
+	      cout << "GOT A B QUARK HERE!" << endl;
+
+	      nb++;
+
+	      if(MotherpdgCode == 6 && MotherParticle == MotherParticle1)
+		{
+		  
+		  cout << "Bottom quark mother is same as top quark" << endl;
+		    }
+	    }
+*/
+
+		}
     }
 }
 
