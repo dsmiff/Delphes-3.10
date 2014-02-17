@@ -490,6 +490,7 @@ int MyClass::GenJetAnalysis()
               Gen_Top1.SetPz(Particle_Pz[Particle_M1[j]]);
               Gen_Top1.SetE(Particle_E[Particle_M1[j]]);
               _Gen_Top1->Fill(Gen_Top1.Pt());
+              std::cout << "Top1 Pt: " << Gen_Top1.Pt() << std::endl;
               gen_count++;
               j++;
               nt++;
@@ -529,6 +530,7 @@ int MyClass::GenJetAnalysis()
               Gen_Top2.SetPz(Particle_Pz[Particle_M1[j]]);
               Gen_Top2.SetE(Particle_E[Particle_M1[j]]);
               _Gen_Top2->Fill(Gen_Top2.Pt());
+              std::cout << "Top2 Pt: " << Gen_Top2.Pt() << std::endl;
               gen_count++;
               j++;
               nt++; 
@@ -570,6 +572,7 @@ int MyClass::GenJetAnalysis()
               Gen_Top3.SetPz(Particle_Pz[Particle_M1[j]]);
               Gen_Top3.SetE(Particle_E[Particle_M1[j]]);
               _Gen_Top3->Fill(Gen_Top3.Pt());
+              std::cout << "Top3 Pt: " << Gen_Top3.Pt() << std::endl;
               gen_count++;
               j++;
               nt++;
@@ -614,6 +617,7 @@ int MyClass::GenJetAnalysis()
               Gen_Top4.SetPz(Particle_Pz[Particle_M1[j]]);
               Gen_Top4.SetE(Particle_E[Particle_M1[j]]);
               _Gen_Top4->Fill(Gen_Top4.Pt());
+              std::cout << "Top4 Pt: " <<Gen_Top4.Pt() << std::endl;
               gen_count++;
               j++;
               nt++;
@@ -784,10 +788,10 @@ void MyClass::Loop()
   _GenJetPt2 = new TH1D("GenJetPt2", "GenJetPt2", 200, 0., 900);
   _GenJetPt3 = new TH1D("GenJetPt3", "GenJetPt3", 200, 0., 900);
   _GenJetPt4 = new TH1D("GenJetPt4", "GenJetPt4", 200, 0., 900);
-  _DelR_W_b1 = new TH2F("DeltaR_W_b1", "DelR_W_b1", 200, 0, 900, 50, 0., 5);
-  _DelR_W_b2 = new TH2F("DeltaR_W_b2", "DelR_W_b2", 200, 0, 900, 50, 0., 5);  
-  _DelR_W_b3 = new TH2F("DeltaR_W_b3", "DelR_W_b3", 200, 0, 900, 50, 0., 5);    
-  _DelR_W_b4 = new TH2F("DeltaR_W_b4", "DelR_W_b4", 200, 0, 900, 50, 0., 5);  
+  _DelR_W_b1 = new TH2F("DeltaR_W_b1", "DelR_W_b1", 200, 0, 900, 50, 0., 8);
+  _DelR_W_b2 = new TH2F("DeltaR_W_b2", "DelR_W_b2", 200, 0, 900, 50, 0., 8);  
+  _DelR_W_b3 = new TH2F("DeltaR_W_b3", "DelR_W_b3", 200, 0, 900, 50, 0., 8);    
+  _DelR_W_b4 = new TH2F("DeltaR_W_b4", "DelR_W_b4", 200, 0, 900, 50, 0., 8);  
   _Gen_Top1 = new TH1D("Gen_Top1", "Gen_Top1.PT", 200, 0., 800);
   _Gen_Top2 = new TH1D("Gen_Top2", "Gen_Top2.PT", 200, 0., 800);
   _Gen_Top3 = new TH1D("Gen_Top3", "Gen_Top3.PT", 200, 0., 800);
