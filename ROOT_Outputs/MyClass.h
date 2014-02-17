@@ -81,12 +81,14 @@ public :
    TH1D* _GenJetPt2;
    TH1D* _GenJetPt3;
    TH1D* _GenJetPt4;
-   TH1D* _DelR_W_b1;
-   TH1D* _DelR_W_b2;
-   TH1D* _DelR_W_b3;
-   TH1D* _DelR_W_b4;
+   TH2F* _DelR_W_b1;
+   TH2F* _DelR_W_b2;
+   TH2F* _DelR_W_b3;
+   TH2F* _DelR_W_b4;
    TH1D* _Gen_Top1;
-
+   TH1D* _Gen_Top2;
+   TH1D* _Gen_Top3;
+   TH1D* _Gen_Top4;
 
    // Particles & other declarations
 
