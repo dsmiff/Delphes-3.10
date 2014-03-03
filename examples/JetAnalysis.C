@@ -40,7 +40,7 @@ void JetAnalysis(const char *intputFile)
 
   TClonesArray *branchJet = treeReader->UseBranch("Jet");
   TClonesArray *branchGenJet = treeReader->UseBranch("GenJet");
-  
+  //  TClonesArray *branchScalarHT = treeReader->UseBranch("ScalarHT");
 
 
 
@@ -66,7 +66,10 @@ void JetAnalysis(const char *intputFile)
 	    Jet *jet = (Jet*) branchJet->At(j);
 	    histJetPT->Fill(jet->PT);
 	    cout << jet->PT << endl;
-	  }
+	    // ScalarHT *ht = (ScalarHT*) branchScalarHT->At(j);
+	    // cout << ht->HT << endl;
+  }
+       
        
 
 
