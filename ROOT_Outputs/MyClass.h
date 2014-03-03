@@ -66,6 +66,9 @@ public :
    TH1D* _JetPt2;
    TH1D* _JetPt3;
    TH1D* _JetPt4;
+   TH1D* _JetPt5;
+   TH1D* _JetPt6;
+   TH1D* _JetPt7;
    TH2F* _JetLego1;
    TH2F* _JetLego2;
    TH2F* _JetLego3;
@@ -89,8 +92,11 @@ public :
    TH1D* _Gen_Top2;
    TH1D* _Gen_Top3;
    TH1D* _Gen_Top4;
+   TH2F* _DelR_W_b_all;
+   TH1F* _JetMult;
 
    // Particles & other declarations
+
 
    TLorentzVector g1, g2, LSP1, LSP2, stop1, stop2, top1, top2, top3, top4, ISR, W1, W2, W3, W4;
    TLorentzVector We = TLorentzVector(0,0,0,0);
@@ -102,7 +108,9 @@ public :
    TLorentzVector Gen_W1, Gen_W2, Gen_W3, Gen_W4;
    TLorentzVector Gen_Top1, Gen_Top2, Gen_Top3, Gen_Top4;
    TLorentzVector Gen_b1, Gen_b2, Gen_b3, Gen_b4;
+   TLorentzVector W_all, b_all, topquark;
    Double_t W_Mindex, b_Mindex;
+   Double_t W_all_Mindex, b_all_Mindex;
    Double_t delRcut = 0.5;
    Double_t TopBoost1, TopBoost2, TopBoost3, TopBoost4;
    Double_t MET;
@@ -114,6 +122,7 @@ public :
    TLorentzVector W_top;
    TLorentzVector b_top;
    Double_t DelR_W_b1, DelR_W_b2, DelR_W_b3, DelR_W_b4;
+   Double_t DelR_W_b_all;
    int nstop = 0;
    int ngluino = 0;
    int njets = 0;
@@ -123,6 +132,8 @@ public :
    Double_t delRmu[4];
    Double_t delRtauon[4];
    Double_t pi = 3.14159265358979312;
+
+
 
 
    // Declaration of leaf types
@@ -528,9 +539,9 @@ MyClass::MyClass(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("root/delphes_500_300_output.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../Comparisons/MG5/tag_1_delphes_events.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("root/delphes_500_300_output.root");
+         f = new TFile("../Comparisons/MG5/tag_1_delphes_events.root");
       }
       f->GetObject("Delphes",tree);
 
