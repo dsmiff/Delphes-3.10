@@ -16,7 +16,7 @@ void GenJetAnalysis()
   
   int len;
   static Float_t PT = 0;
-  TFile *f = new TFile("../delphes_MG_NEW.root");
+  TFile *f = new TFile("../delphes_MG_TEST.root");
   TTree *fChain = (TTree*)f->Get("Delphes");
 
   TBranch *j = fChain->GetBranch("GenJet.PT");
