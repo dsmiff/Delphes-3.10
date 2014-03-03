@@ -19,8 +19,9 @@ using namespace std;
 int MyClass::GetNJets(){
 
   Int_t njet = 0;
+  Int_t NJets = sizeof(Jet_PT)/sizeof(Jet_PT[0]);
 
-  for(unsigned int t=0; t<sizeof(Jet_PT); t++){
+  for(unsigned int t=0; t<NJets; t++){
     if(Jet_PT[t]<10) continue;
       njet++;
   }
@@ -43,7 +44,10 @@ int MyClass::AnalyseParticles(){
   int nstp = 0;
   int nwbosons=0;
 
-for(unsigned int r=0; r<sizeof(Particle_PID); ){
+Int_t Nparticles = sizeof(Particle_PID)/sizeof(Particle_PID[0]);
+
+
+for(unsigned int r=0; r<Nparticles; ){
 
   int count = 0;
 
@@ -204,9 +208,11 @@ int MyClass::TopPolarisation(){
 Double_t angle;       // Polar angle between top quark and respective lepton
 Double_t phi;         // Azimuthal angle between top quark and respective lepton
 
+Int_t Nparticles = sizeof(Particle_PID)/sizeof(Particle_PID[0]);
+
 // NB if more than one of the same leptons exists (likely the case with muons), polar angle of each is added to the histo (rather than ommitting it)
  
-for(unsigned int p=0; p<sizeof(Particle_PID); p++){
+for(unsigned int p=0; p < Nparticles; p++){
   if(Particle_Status[p] == 1){
     if(abs(Particle_PID[p]) == 11){
       std::cout << "Found a final state electron/positron" << std::endl;
@@ -411,8 +417,8 @@ for(unsigned int p=0; p<sizeof(Particle_PID); p++){
   if(abs(Particle_PID[p]) == 24){
    std::cout << "Found a W boson at index: " << p << std::endl;
   }
- }
 
+ }
 
 
 }
@@ -423,7 +429,10 @@ for(unsigned int p=0; p<sizeof(Particle_PID); p++){
 
 int MyClass::JetAnalysis(){
 
-  for(unsigned int k=0; k<sizeof(Jet_PT); k++){
+Int_t NJets = sizeof(Jet_PT)/sizeof(Jet_PT[0]);
+
+
+  for(unsigned int k=0; k< NJets; k++){
     if(Jet_PT[k] > 20. && Jet_Mass[k] > 0.1){
     Jet_ET[k] = sqrt(pow(Jet_PT[k],2) + pow(Jet_Mass[k],2)); // The transverse energy of each jet
     HT+=Jet_ET[k];                                            // The scalar sum of the transverse energy of each jet as given by the note
@@ -456,9 +465,17 @@ int MyClass::JetAnalysis(){
   _JetPt2->Fill(Jets.at(1).Pt());
   _JetPt3->Fill(Jets.at(2).Pt());
   _JetPt4->Fill(Jets.at(3).Pt());
+  _JetPt5->Fill(Jets.at(4).Pt());
+  _JetPt6->Fill(Jets.at(5).Pt());
+  _JetPt7->Fill(Jets.at(6).Pt());
 
   Jets.clear();
 
+
+  // Jet Multiplicities 
+
+  std::cout << "Jet Multiplicities: " << Jet_size << std::endl;
+  _JetMult->Fill(Jet_size);
 
 
 }
@@ -471,8 +488,12 @@ int MyClass::GenJetAnalysis()
   int nt=0;
   int nb=0;
 
+Int_t Nparticles = sizeof(Particle_PID)/sizeof(Particle_PID[0]);
+Int_t NGenJets = sizeof(GenJet_PT)/sizeof(GenJet_PT[0]);
 
-    for(unsigned int j=0; j<sizeof(Particle_PID); j++){
+  // Looking for individual top quarks in the event
+
+    for(unsigned int j=0; j<Nparticles; j++){
 
       int gen_count =0;
 
@@ -490,7 +511,7 @@ int MyClass::GenJetAnalysis()
               Gen_Top1.SetPz(Particle_Pz[Particle_M1[j]]);
               Gen_Top1.SetE(Particle_E[Particle_M1[j]]);
               _Gen_Top1->Fill(Gen_Top1.Pt());
-              std::cout << "Top1 Pt: " << Gen_Top1.Pt() << std::endl;
+        //      std::cout << "Top1 Pt: " << Gen_Top1.Pt() << std::endl;
               gen_count++;
               j++;
               nt++;
@@ -506,6 +527,13 @@ int MyClass::GenJetAnalysis()
           if(abs(Particle_PID[Particle_M1[j]]) == 6 && b_Mindex == W_Mindex){
 
             DelR_W_b1 = sqrt(pow((Gen_W1.Eta() - Gen_b1.Eta()),2) + pow((Gen_W1.Phi() - Gen_b1.Phi()), 2));
+
+              if(DelR_W_b1 > 3.14){
+
+                DelR_W_b1 = 2*3.14 - DelR_W_b1;
+
+              }
+
             _DelR_W_b1->Fill(Gen_Top1.Pt() ,DelR_W_b1);
 
             gen_count++;
@@ -530,7 +558,7 @@ int MyClass::GenJetAnalysis()
               Gen_Top2.SetPz(Particle_Pz[Particle_M1[j]]);
               Gen_Top2.SetE(Particle_E[Particle_M1[j]]);
               _Gen_Top2->Fill(Gen_Top2.Pt());
-              std::cout << "Top2 Pt: " << Gen_Top2.Pt() << std::endl;
+        //      std::cout << "Top2 Pt: " << Gen_Top2.Pt() << std::endl;
               gen_count++;
               j++;
               nt++; 
@@ -549,6 +577,13 @@ int MyClass::GenJetAnalysis()
               if(abs(Particle_PID[Particle_M1[j]]) == 6 && b_Mindex == W_Mindex){
 
             DelR_W_b2 = sqrt(pow((Gen_W2.Eta() - Gen_b2.Eta()),2) + pow((Gen_W2.Phi() - Gen_b2.Phi()), 2));
+
+                if(DelR_W_b2 > 3.14){
+
+                  DelR_W_b2 = 2*3.14 - DelR_W_b2;
+
+                }
+
             _DelR_W_b2->Fill(Gen_Top2.Pt(), DelR_W_b2);
 
             gen_count++;
@@ -572,7 +607,7 @@ int MyClass::GenJetAnalysis()
               Gen_Top3.SetPz(Particle_Pz[Particle_M1[j]]);
               Gen_Top3.SetE(Particle_E[Particle_M1[j]]);
               _Gen_Top3->Fill(Gen_Top3.Pt());
-              std::cout << "Top3 Pt: " << Gen_Top3.Pt() << std::endl;
+           //   std::cout << "Top3 Pt: " << Gen_Top3.Pt() << std::endl;
               gen_count++;
               j++;
               nt++;
@@ -592,6 +627,11 @@ int MyClass::GenJetAnalysis()
 
 
             DelR_W_b3 = sqrt(pow((Gen_W3.Eta() - Gen_b3.Eta()),2) + pow((Gen_W3.Phi() - Gen_b3.Phi()), 2));
+
+                if(DelR_W_b3 > 3.14){
+
+                   DelR_W_b3 = 2*3.14 - DelR_W_b3;
+                }
             _DelR_W_b3->Fill(Gen_Top3.Pt(), DelR_W_b3);
 
             gen_count++;
@@ -617,7 +657,7 @@ int MyClass::GenJetAnalysis()
               Gen_Top4.SetPz(Particle_Pz[Particle_M1[j]]);
               Gen_Top4.SetE(Particle_E[Particle_M1[j]]);
               _Gen_Top4->Fill(Gen_Top4.Pt());
-              std::cout << "Top4 Pt: " <<Gen_Top4.Pt() << std::endl;
+         //     std::cout << "Top4 Pt: " <<Gen_Top4.Pt() << std::endl;
               gen_count++;
               j++;
               nt++;
@@ -637,6 +677,11 @@ int MyClass::GenJetAnalysis()
 
 
             DelR_W_b4 = sqrt(pow((Gen_W4.Eta() - Gen_b4.Eta()),2) + pow((Gen_W4.Phi() - Gen_b4.Phi()), 2));
+
+                    if(DelR_W_b4 > 3.14){
+                      DelR_W_b4 = 2*3.14 - DelR_W_b4;
+                    }
+
             _DelR_W_b4->Fill(Gen_Top4.Pt(), DelR_W_b4);
 
             gen_count++;
@@ -645,13 +690,56 @@ int MyClass::GenJetAnalysis()
         }    
     }
 
+    // Same Delta R(W,b) vs Top Pt but for all tops
+
+    for(unsigned int p=0; p < Nparticles; p++)
+    {
+
+      if(abs(Particle_PID[p]) == 24){          // Found a W boson, assinging TLorentzVector
+        W_all.SetPx(Particle_Px[p]);
+        W_all.SetPy(Particle_Py[p]);
+        W_all.SetPz(Particle_Pz[p]);
+        W_all.SetE(Particle_E[p]);
+        W_all_Mindex = Particle_M1[p];
+     //   std::cout << "W px: " << W_all.Px() << std::endl;
+              
+              if(abs(Particle_PID[Particle_M1[p]]) == 6){
+      //          std::cout << "Found daddy top quark" << std::endl;
+                topquark.SetPx(Particle_Px[p]);
+                topquark.SetPy(Particle_Py[p]);
+                topquark.SetPz(Particle_Pz[p]);
+                topquark.SetE(Particle_E[p]);
+      //          std::cout << "Top px: " << topquark.Px() << std::endl;
+              }
+            }
+       if(abs(Particle_PID[p]) == 5){
+        b_all.SetPx(Particle_Px[p]);
+        b_all.SetPy(Particle_Py[p]);
+        b_all.SetPz(Particle_Pz[p]);
+        b_all.SetE(Particle_E[p]);
+        b_all_Mindex = Particle_M1[p];
+   //     std::cout << "b px: " << b_all.Px() << std::endl;
+
+              if(abs(Particle_PID[Particle_M1[p]]) == 6 && b_all_Mindex == W_all_Mindex){
+
+                DelR_W_b_all = sqrt(pow((W_all.Eta() - b_all.Eta()),2) + pow((W_all.Phi() - b_all.Phi()), 2));
+     //           std::cout << "Delta R(W,b): " << DelR_W_b_all << std::endl;
+
+                  if(DelR_W_b_all > 3.14){
+                    DelR_W_b_all = 2*3.14 - DelR_W_b_all;
+                  }
+                  _DelR_W_b_all->Fill(topquark.Pt(),DelR_W_b_all);
+              }
+
+       }       
+      }
+
+
+      
 
 
 
-
-
-
-  for(unsigned int i=0; i<sizeof(GenJet_PT); i++)
+  for(unsigned int i=0; i< NGenJets; i++)
     {
    
 
@@ -680,7 +768,9 @@ int MyClass::GenJetAnalysis()
 
 int MyClass::METAnalysis(){
 
-  for(unsigned int j=0; j<sizeof(MissingET_MET); j++){
+  Int_t NMET = sizeof(MissingET_MET)/sizeof(MissingET_MET[0]);
+
+  for(unsigned int j=0; j<NMET; j++){
     if(MissingET_MET[j]> 5){
       _MET_histo->Fill(MissingET_MET[j]);
    }
@@ -694,9 +784,11 @@ int MyClass::METAnalysis(){
 
 int MyClass::TopAnalysis(){
 
-   Double_t Pt_top[sizeof(Particle_PT)];
+  Double_t Pt_top[sizeof(Particle_PT)];
+  Int_t Nparticles = sizeof(Particle_PID)/sizeof(Particle_PID[0]);
 
-  for(unsigned int q=0; q<sizeof(Particle_PT); q++){
+
+  for(unsigned int q=0; q<Nparticles; q++){
     if(abs(Particle_PID[q]) == 6 && Particle_Status[q] == 2) {             
    //   std::cout << "Found a top quark" << std::endl;
       _TopPt->Fill(Particle_PT[q]);                                         
@@ -734,7 +826,9 @@ int MyClass::TopAnalysis(){
 
   int MyClass::ScalarHTAnalysis(){
 
-    for(unsigned int z=0; z<sizeof(ScalarHT_HT); z++){
+    Int_t NScalarHT = sizeof(ScalarHT_HT)/sizeof(ScalarHT_HT[0]);
+
+    for(unsigned int z=0; z<NScalarHT; z++){
    // if(ScalarHT_HT[z] < 10) continue;
       if(Jet_PT[z] > 20. && Jet_Mass[z] > 0.1){
         if(ScalarHT_HT[z] < 8) continue;
@@ -757,8 +851,8 @@ void MyClass::Loop()
 
   TH1::SetDefaultSumw2();
 
-  _JetPT = new TH1D("jetPt", "jetPt", 200, 0., 900.);
-  _h_genjetPt = new TH1D("genjetPt", "genjetPt", 200, 0., 900.);
+  _JetPT = new TH1D("jetPt", "jetPt", 200, 0., 1200.);
+  _h_genjetPt = new TH1D("genjetPt", "genjetPt", 200, 0., 1200.);
   _ttbar_jetpt = new TH1D("ttbar_jetpt", "ttbar_jetpt", 200, 0., 200.);
   _ttbar_genjetpt = new TH1D("ttbar_genjetpt", "ttbar_genjetpt", 200, 0., 200.);
   _tmass = new TH1D("tmass", "tmass", 200, 0., 400.);
@@ -769,10 +863,13 @@ void MyClass::Loop()
   _HT = new TH1D("HT", "HT", 200, 0., 1500.);
   _ISR = new TH1D("ISR", "ISR", 200, 0., 500);
   _ScalarHT = new TH1D("ScalarHT","ScalarHT", 200, 200, 2600);
-  _JetPt1 = new TH1D("_JetPt1", "1st leading Jet Pt", 200, 0., 900.);
-  _JetPt2 = new TH1D("_JetPt2", "2nd leading Jet Pt", 200, 0., 900.);
-  _JetPt3 = new TH1D("_JetPt3", "3rd leading Jet Pt", 200, 0., 900.);
-  _JetPt4 = new TH1D("_JetPt4", "4th leading Jet Pt", 200, 0., 900.);
+  _JetPt1 = new TH1D("_JetPt1", "1st leading Jet Pt", 200, 0., 1400.);
+  _JetPt2 = new TH1D("_JetPt2", "2nd leading Jet Pt", 200, 0., 1400.);
+  _JetPt3 = new TH1D("_JetPt3", "3rd leading Jet Pt", 200, 0., 1400.);
+  _JetPt4 = new TH1D("_JetPt4", "4th leading Jet Pt", 200, 0., 1400.);
+  _JetPt5 = new TH1D("_JetPt5", "5th leading Jet Pt", 200, 0., 1400.);
+  _JetPt6 = new TH1D("_JetPt6", "6th leading Jet Pt", 200, 0., 1400.);
+  _JetPt7 = new TH1D("_JetPt7", "7th leading Jet Pt", 200, 0., 1400.);
   _JetLego1 = new TH2F("JetLego1","Jet Lego plot", 200, 0, 600,  50, -5, 5);
   _JetLego2 = new TH2F("JetLego2","Jet Lego plot", 200, 0, 600,  50, -5, 5);
   _JetLego3 = new TH2F("JetLego3","Jet Lego plot", 200, 0, 600,  50, -5, 5);
@@ -783,19 +880,21 @@ void MyClass::Loop()
   _phi1 = new TH1F("phi1","phi1", 50, 0.0, 7);
   _phi2 = new TH1F("phi2","phi2", 50, 0.0, 7);
   _phi3 = new TH1F("phi3","phi3", 50, 0.0, 7);
-  _GenJetPThisto = new TH1D("GenJetPT", "GenJet_P{T}", 200, 0.0, 900);
-  _GenJetPt1 = new TH1D("GenJetPt1", "GenJetPt1", 200, 0., 900);
-  _GenJetPt2 = new TH1D("GenJetPt2", "GenJetPt2", 200, 0., 900);
-  _GenJetPt3 = new TH1D("GenJetPt3", "GenJetPt3", 200, 0., 900);
-  _GenJetPt4 = new TH1D("GenJetPt4", "GenJetPt4", 200, 0., 900);
-  _DelR_W_b1 = new TH2F("DeltaR_W_b1", "DelR_W_b1", 200, 0, 900, 50, 0., 8);
-  _DelR_W_b2 = new TH2F("DeltaR_W_b2", "DelR_W_b2", 200, 0, 900, 50, 0., 8);  
-  _DelR_W_b3 = new TH2F("DeltaR_W_b3", "DelR_W_b3", 200, 0, 900, 50, 0., 8);    
-  _DelR_W_b4 = new TH2F("DeltaR_W_b4", "DelR_W_b4", 200, 0, 900, 50, 0., 8);  
-  _Gen_Top1 = new TH1D("Gen_Top1", "Gen_Top1.PT", 200, 0., 800);
-  _Gen_Top2 = new TH1D("Gen_Top2", "Gen_Top2.PT", 200, 0., 800);
-  _Gen_Top3 = new TH1D("Gen_Top3", "Gen_Top3.PT", 200, 0., 800);
-  _Gen_Top4 = new TH1D("Gen_Top4", "Gen_Top4.PT", 200, 0., 800);
+  _GenJetPThisto = new TH1D("GenJetPT", "GenJet_P{T}", 200, 0.0, 1400);
+  _GenJetPt1 = new TH1D("GenJetPt1", "GenJetPt1", 200, 0., 1400);
+  _GenJetPt2 = new TH1D("GenJetPt2", "GenJetPt2", 200, 0., 1400);
+  _GenJetPt3 = new TH1D("GenJetPt3", "GenJetPt3", 200, 0., 1400);
+  _GenJetPt4 = new TH1D("GenJetPt4", "GenJetPt4", 200, 0., 1400);
+  _DelR_W_b1 = new TH2F("DeltaR_W_b1", "DelR_W_b1", 200, 0, 1200, 50, 0., 8);
+  _DelR_W_b2 = new TH2F("DeltaR_W_b2", "DelR_W_b2", 200, 0, 1200, 50, 0., 8);  
+  _DelR_W_b3 = new TH2F("DeltaR_W_b3", "DelR_W_b3", 200, 0, 1200, 50, 0., 8);    
+  _DelR_W_b4 = new TH2F("DeltaR_W_b4", "DelR_W_b4", 200, 0, 1200, 50, 0., 8);  
+  _Gen_Top1 = new TH1D("Gen_Top1", "Gen_Top1.PT", 200, 0., 1200);
+  _Gen_Top2 = new TH1D("Gen_Top2", "Gen_Top2.PT", 200, 0., 1200);
+  _Gen_Top3 = new TH1D("Gen_Top3", "Gen_Top3.PT", 200, 0., 1200);
+  _Gen_Top4 = new TH1D("Gen_Top4", "Gen_Top4.PT", 200, 0., 1200);
+  _DelR_W_b_all = new TH2F("DelR_W_b_all","DelR_W_b_all", 200, 0., 1200, 50, 0., 6);
+  _JetMult = new TH1F("JetMult","JetMultiplicites",100, 0., 20);
 
 
 Long64_t nentries = fChain->GetEntries();
@@ -842,9 +941,10 @@ TLegend *leg = new TLegend(0.6,0.7,0.89,0.89);
 
 
 c1->Clear();
-TFile *Jet_PT = new TFile("JetPT_tag_1.root", "RECREATE");
+TFile *Jet_PT = new TFile("JetPT_MG5_500_100.root", "RECREATE");
 _JetPT->Write();
 _GenJetPThisto->Write();
+Jet_PT->Close();
 
 c2->Clear();
 _tmass->Draw("hist");
@@ -855,10 +955,10 @@ _TopPt->Draw("hist");
 //c3->Print("TopPt.pdf");
 
 c4->Clear();
-TFile *PTgluino_stop = new TFile("PTgluino_MG_500_300.root","RECREATE");
+TFile *PTgluino_stop = new TFile("PTgluino_MG5_500_100.root","RECREATE");
 _Top_Gluino->Draw("hist");
 _Top_Gluino->Write();
-_Top_Gluino->SetTitle("P_{T} from stop (500 GeV) and gluino (600 GeV) ");
+_Top_Gluino->SetTitle("P_{T} from stop (500 GeV) and gluino (1 TeV) ");
 _Top_Gluino->GetXaxis()->SetTitle("P_{T} of top");
 _Top_Gluino->GetYaxis()->SetTitle("Entries");
 _Top_Stop->Draw("SAME");
@@ -868,11 +968,13 @@ leg->AddEntry(_Top_Gluino, "PT of top from gluino", "l");
 leg->AddEntry(_Top_Stop, "PT of top from stop", "l");
 leg->Draw();
 c4->Print("PtTopGluino.pdf");
+PTgluino_stop->Close();
+
 
 c7->Clear();
 _DelR_W_b1->Draw("hist");
 
-TFile *DeltaR_TopPT = new TFile("DeltaR_TopPT_500_300.root", "RECREATE");
+TFile *DeltaR_TopPT = new TFile("DeltaR_TopPT_MG5_500_100.root", "RECREATE");
 _DelR_W_b1->Write();
 _DelR_W_b2->Write();
 _DelR_W_b3->Write();
@@ -881,47 +983,59 @@ _Gen_Top1->Write();
 _Gen_Top2->Write();
 _Gen_Top3->Write();
 _Gen_Top4->Write();
+_DelR_W_b_all->Write();
+DeltaR_TopPT->Close();
 
-TFile *PTstop_top = new TFile("PT_MG_500_300.root", "RECREATE");
+TFile *PTstop_top = new TFile("PT_MG5_500_100.root", "RECREATE");
 _Top_Stop->Write();
+PTstop_top->Close();
 
-TFile *f = new TFile("MET_MG_500_300.root", "RECREATE");
+TFile *f = new TFile("MET_MG5_500_100.root", "RECREATE");
 _MET_histo->Write();
+f->Close();
 
-TFile *g = new TFile("HT_MG_500_300.root", "RECREATE");
+TFile *g = new TFile("HT_MG5_500_100.root", "RECREATE");
 _HT->Write();
+g->Close();
 
-TFile *ISR = new TFile("ISR_MG_500_300.root", "RECREATE");
+TFile *ISR = new TFile("ISR_MG5_500_100.root", "RECREATE");
 _ISR->Write();
+ISR->Close();
 
-TFile *ScalarHT = new TFile("ScalarHT_MG_500_300.root","RECREATE");
+TFile *ScalarHT = new TFile("ScalarHT_MG5_500_100.root","RECREATE");
 _ScalarHT->Write();
+ScalarHT->Close();
 
-TFile *JetsPt1 = new TFile("LeadingJetPt_MG_500_300.root", "RECREATE");
+TFile *JetsPt1 = new TFile("LeadingJetPt_MG5_500_100.root", "RECREATE");
 _JetPt1->Write();
 _JetPt2->Write();
 _JetPt3->Write();
 _JetPt4->Write();
+_JetPt5->Write();
+_JetPt6->Write();
+_JetPt7->Write();
+_JetMult->Write();
 _GenJetPt1->Write();
 _GenJetPt2->Write();
 _GenJetPt3->Write();
 _GenJetPt4->Write();
+JetsPt1->Close();
 
-
-TFile *JetLego = new TFile("JetLego_MG_500_300.root", "RECREATE");
+TFile *JetLego = new TFile("JetLego_MG5_500_100.root", "RECREATE");
 _JetLego1->Write();
 _JetLego2->Write();
 _JetLego3->Write();
 _JetLego4->Write();
+JetLego->Close();
 
-TFile *angles = new TFile("angle1_MG_500_300.root","RECREATE");
+TFile *angles = new TFile("angle1_MG5_500_100.root","RECREATE");
 _polarangle1->Write();
 _polarangle2->Write();
 _polarangle3->Write();
 _phi1->Write();
 _phi2->Write();
 _phi3->Write();
-
+angles->Close();
 
 
 
