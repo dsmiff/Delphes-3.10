@@ -53,37 +53,44 @@ public :
    TH1D* _h_genjetPt;
    TH1D* _ttbar;
    TH1D* _ttbar_jetpt;
+
    TH1D* _ttbar_genjetpt;
    TH1D* _tmass;
    TH1D* _TopPt;
    TH1D* _Top_Gluino;
    TH1D* _Top_Stop;
+
    TH1D* _MET_histo;
    TH1D* _HT;
    TH1D* _ISR;
    TH1D* _ScalarHT;
+   TH2D* _ScalarHTJetMults;
+
    TH1D* _JetPt1;
    TH1D* _JetPt2;
    TH1D* _JetPt3;
    TH1D* _JetPt4;
-   TH1D* _JetPt5;
+  /* TH1D* _JetPt5;
    TH1D* _JetPt6;
-   TH1D* _JetPt7;
+   TH1D* _JetPt7;*/
    TH2F* _JetLego1;
    TH2F* _JetLego2;
    TH2F* _JetLego3;
    TH2F* _JetLego4;
+
    TH1F* _polarangle1;
    TH1F* _polarangle2;
    TH1F* _polarangle3;
    TH1F* _phi1;
    TH1F* _phi2;
    TH1F* _phi3;
+
    TH1D* _GenJetPThisto;
    TH1D* _GenJetPt1;
    TH1D* _GenJetPt2;
    TH1D* _GenJetPt3;
    TH1D* _GenJetPt4;
+
    TH2F* _DelR_W_b1;
    TH2F* _DelR_W_b2;
    TH2F* _DelR_W_b3;
@@ -93,6 +100,7 @@ public :
    TH1D* _Gen_Top3;
    TH1D* _Gen_Top4;
    TH2F* _DelR_W_b_all;
+
    TH1F* _JetMult;
 
    // Particles & other declarations
