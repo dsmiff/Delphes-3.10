@@ -22,11 +22,11 @@ int MyClass::GetNJets(){
   Int_t NJets = sizeof(Jet_PT)/sizeof(Jet_PT[0]);
 
   for(unsigned int t=0; t<NJets; t++){
-    if(Jet_PT[t]<10) continue;
+    if(Jet_PT[t]<0) continue;
       njet++;
   }
     std::cout << "# jets: " << njet << std::endl;
-    return njet;
+   // return njet;
 
 }
 
@@ -432,11 +432,15 @@ int MyClass::JetAnalysis(){
 Int_t NJets = sizeof(Jet_PT)/sizeof(Jet_PT[0]);
 
 
+
   for(unsigned int k=0; k< NJets; k++){
-    if(Jet_PT[k] > 20. && Jet_Mass[k] > 0.1){
+    if(Jet_PT[k] > 20. ){
     Jet_ET[k] = sqrt(pow(Jet_PT[k],2) + pow(Jet_Mass[k],2)); // The transverse energy of each jet
     HT+=Jet_ET[k];                                            // The scalar sum of the transverse energy of each jet as given by the note
     _JetPT->Fill(Jet_PT[k]);
+    _JetMult->Fill(Jet_size);
+    _ScalarHTJetMults->Fill(Jet_size, ScalarHT_HT[0]);
+    //std::cout << "ScalarHT: " << ScalarHT_HT[0] << std::endl;
     njets++;
     if(HT<8) continue;
      _HT->Fill(HT);
@@ -465,17 +469,17 @@ Int_t NJets = sizeof(Jet_PT)/sizeof(Jet_PT[0]);
   _JetPt2->Fill(Jets.at(1).Pt());
   _JetPt3->Fill(Jets.at(2).Pt());
   _JetPt4->Fill(Jets.at(3).Pt());
-  _JetPt5->Fill(Jets.at(4).Pt());
+  /*_JetPt5->Fill(Jets.at(4).Pt());
   _JetPt6->Fill(Jets.at(5).Pt());
-  _JetPt7->Fill(Jets.at(6).Pt());
+  _JetPt7->Fill(Jets.at(6).Pt());*/
 
   Jets.clear();
 
 
   // Jet Multiplicities 
 
-  std::cout << "Jet Multiplicities: " << Jet_size << std::endl;
-  _JetMult->Fill(Jet_size);
+ // std::cout << "Jet Multiplicities: " << Jet_size << std::endl;
+
 
 
 }
@@ -694,7 +698,6 @@ Int_t NGenJets = sizeof(GenJet_PT)/sizeof(GenJet_PT[0]);
 
     for(unsigned int p=0; p < Nparticles; p++)
     {
-
       if(abs(Particle_PID[p]) == 24){          // Found a W boson, assinging TLorentzVector
         W_all.SetPx(Particle_Px[p]);
         W_all.SetPy(Particle_Py[p]);
@@ -702,6 +705,8 @@ Int_t NGenJets = sizeof(GenJet_PT)/sizeof(GenJet_PT[0]);
         W_all.SetE(Particle_E[p]);
         W_all_Mindex = Particle_M1[p];
      //   std::cout << "W px: " << W_all.Px() << std::endl;
+        std::cout << "Found a W!" << std::endl;
+        std::cout << "W phi: " << W_all.Phi() << std::endl;
               
               if(abs(Particle_PID[Particle_M1[p]]) == 6){
       //          std::cout << "Found daddy top quark" << std::endl;
@@ -719,6 +724,8 @@ Int_t NGenJets = sizeof(GenJet_PT)/sizeof(GenJet_PT[0]);
         b_all.SetE(Particle_E[p]);
         b_all_Mindex = Particle_M1[p];
    //     std::cout << "b px: " << b_all.Px() << std::endl;
+   //     std::cout << "Found a b!" << std::endl;
+   //     std::cout << "b phi: " << b_all.Phi() << std::endl;
 
               if(abs(Particle_PID[Particle_M1[p]]) == 6 && b_all_Mindex == W_all_Mindex){
 
@@ -731,7 +738,9 @@ Int_t NGenJets = sizeof(GenJet_PT)/sizeof(GenJet_PT[0]);
                   _DelR_W_b_all->Fill(topquark.Pt(),DelR_W_b_all);
               }
 
-       }       
+       }   
+            // std::cout << "pdgCode: " << Particle_PID[p] << std::endl;
+    
       }
 
 
@@ -833,7 +842,7 @@ int MyClass::TopAnalysis(){
       if(Jet_PT[z] > 20. && Jet_Mass[z] > 0.1){
         if(ScalarHT_HT[z] < 8) continue;
           _ScalarHT->Fill(ScalarHT_HT[z]);
-          std::cout << "Scalar HT: " << ScalarHT_HT[z] << std::endl;
+        //  std::cout << "Scalar HT: " << ScalarHT_HT[z] << std::endl;
         }
       }
   }
@@ -854,51 +863,60 @@ void MyClass::Loop()
   _JetPT = new TH1D("jetPt", "jetPt", 200, 0., 1200.);
   _h_genjetPt = new TH1D("genjetPt", "genjetPt", 200, 0., 1200.);
   _ttbar_jetpt = new TH1D("ttbar_jetpt", "ttbar_jetpt", 200, 0., 200.);
+
   _ttbar_genjetpt = new TH1D("ttbar_genjetpt", "ttbar_genjetpt", 200, 0., 200.);
   _tmass = new TH1D("tmass", "tmass", 200, 0., 400.);
   _TopPt = new TH1D("TopPt", "TopPt", 200, 0., 800.);
   _Top_Gluino = new TH1D("Top_Gluino", "Top_Gluino", 200, 0., 800.);
   _Top_Stop = new TH1D("Top_Stop", "Top_Stop", 200, 0., 800.);
+
   _MET_histo = new TH1D("MET_histo", "MET_histo", 200, 0., 2500.);
   _HT = new TH1D("HT", "HT", 200, 0., 1500.);
   _ISR = new TH1D("ISR", "ISR", 200, 0., 500);
   _ScalarHT = new TH1D("ScalarHT","ScalarHT", 200, 200, 2600);
+  _ScalarHTJetMults = new TH2D("ScalarHTJetMults","ScalarHTJetMults",200, 0, 20, 200, 0, 2600);
+
   _JetPt1 = new TH1D("_JetPt1", "1st leading Jet Pt", 200, 0., 1400.);
   _JetPt2 = new TH1D("_JetPt2", "2nd leading Jet Pt", 200, 0., 1400.);
   _JetPt3 = new TH1D("_JetPt3", "3rd leading Jet Pt", 200, 0., 1400.);
   _JetPt4 = new TH1D("_JetPt4", "4th leading Jet Pt", 200, 0., 1400.);
-  _JetPt5 = new TH1D("_JetPt5", "5th leading Jet Pt", 200, 0., 1400.);
+/*  _JetPt5 = new TH1D("_JetPt5", "5th leading Jet Pt", 200, 0., 1400.);
   _JetPt6 = new TH1D("_JetPt6", "6th leading Jet Pt", 200, 0., 1400.);
-  _JetPt7 = new TH1D("_JetPt7", "7th leading Jet Pt", 200, 0., 1400.);
+  _JetPt7 = new TH1D("_JetPt7", "7th leading Jet Pt", 200, 0., 1400.);*/
   _JetLego1 = new TH2F("JetLego1","Jet Lego plot", 200, 0, 600,  50, -5, 5);
   _JetLego2 = new TH2F("JetLego2","Jet Lego plot", 200, 0, 600,  50, -5, 5);
   _JetLego3 = new TH2F("JetLego3","Jet Lego plot", 200, 0, 600,  50, -5, 5);
   _JetLego4 = new TH2F("JetLego4","Jet Lego plot", 200, 0, 600,  50, -5, 5);
+  _JetMult = new TH1F("JetMult","JetMultiplicites",100, 0., 20);
+
   _polarangle1 = new TH1F("polarangle1","polarangle1", 50, 0.0, 4);
   _polarangle2 = new TH1F("polarangle2","polarangle2", 50, 0.0, 4);
   _polarangle3 = new TH1F("polarangle3","polarangle3", 50, 0.0, 4);
   _phi1 = new TH1F("phi1","phi1", 50, 0.0, 7);
   _phi2 = new TH1F("phi2","phi2", 50, 0.0, 7);
   _phi3 = new TH1F("phi3","phi3", 50, 0.0, 7);
+
   _GenJetPThisto = new TH1D("GenJetPT", "GenJet_P{T}", 200, 0.0, 1400);
   _GenJetPt1 = new TH1D("GenJetPt1", "GenJetPt1", 200, 0., 1400);
   _GenJetPt2 = new TH1D("GenJetPt2", "GenJetPt2", 200, 0., 1400);
   _GenJetPt3 = new TH1D("GenJetPt3", "GenJetPt3", 200, 0., 1400);
   _GenJetPt4 = new TH1D("GenJetPt4", "GenJetPt4", 200, 0., 1400);
+
   _DelR_W_b1 = new TH2F("DeltaR_W_b1", "DelR_W_b1", 200, 0, 1200, 50, 0., 8);
   _DelR_W_b2 = new TH2F("DeltaR_W_b2", "DelR_W_b2", 200, 0, 1200, 50, 0., 8);  
   _DelR_W_b3 = new TH2F("DeltaR_W_b3", "DelR_W_b3", 200, 0, 1200, 50, 0., 8);    
   _DelR_W_b4 = new TH2F("DeltaR_W_b4", "DelR_W_b4", 200, 0, 1200, 50, 0., 8);  
+  _DelR_W_b_all = new TH2F("DelR_W_b_all","DelR_W_b_all", 200, 0., 1200, 50, 0., 6);
+
   _Gen_Top1 = new TH1D("Gen_Top1", "Gen_Top1.PT", 200, 0., 1200);
   _Gen_Top2 = new TH1D("Gen_Top2", "Gen_Top2.PT", 200, 0., 1200);
   _Gen_Top3 = new TH1D("Gen_Top3", "Gen_Top3.PT", 200, 0., 1200);
   _Gen_Top4 = new TH1D("Gen_Top4", "Gen_Top4.PT", 200, 0., 1200);
-  _DelR_W_b_all = new TH2F("DelR_W_b_all","DelR_W_b_all", 200, 0., 1200, 50, 0., 6);
-  _JetMult = new TH1F("JetMult","JetMultiplicites",100, 0., 20);
+
 
 
 Long64_t nentries = fChain->GetEntries();
-//Long64_t nentries = 1000;
+//Long64_t nentries = 1;
 
 //Long64_t nents = b_Particle_PID->GetEntries();
 
@@ -939,11 +957,17 @@ TCanvas *c4 = new TCanvas("c4", "c4", 200, 10, 600, 400);
 TCanvas *c7 = new TCanvas("c7", "c7", 200, 10, 600, 400);
 TLegend *leg = new TLegend(0.6,0.7,0.89,0.89);
 
+/*
+TFile *MG_v5 = new TFile("MG_v5.root","RECREATE");
+_JetPT->Write();
+*/
+
 
 c1->Clear();
 TFile *Jet_PT = new TFile("JetPT_MG5_500_100.root", "RECREATE");
 _JetPT->Write();
 _GenJetPThisto->Write();
+_ScalarHTJetMults->Write();
 Jet_PT->Close();
 
 c2->Clear();
@@ -1011,10 +1035,10 @@ _JetPt1->Write();
 _JetPt2->Write();
 _JetPt3->Write();
 _JetPt4->Write();
-_JetPt5->Write();
+/*_JetPt5->Write();
 _JetPt6->Write();
 _JetPt7->Write();
-_JetMult->Write();
+_JetMult->Write();*/
 _GenJetPt1->Write();
 _GenJetPt2->Write();
 _GenJetPt3->Write();
