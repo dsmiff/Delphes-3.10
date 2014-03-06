@@ -401,9 +401,9 @@ module Merger MissingET {
 module Merger ScalarHT {
 # add InputArray InputArray
   add InputArray UniqueObjectFinder/jets
-  add InputArray UniqueObjectFinder/electrons
-  add InputArray UniqueObjectFinder/photons
-  add InputArray UniqueObjectFinder/muons
+ # add InputArray UniqueObjectFinder/electrons
+ # add InputArray UniqueObjectFinder/photons
+ # add InputArray UniqueObjectFinder/muons
   set EnergyOutputArray energy
 }
 
