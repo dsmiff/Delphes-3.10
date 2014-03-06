@@ -50,7 +50,7 @@ void JetAnalysis(const char *intputFile)
   TH1 *histJetEta = new TH1F("Jet_Eta", "Jet_Eta", 50, -4, 4);
   TH1 *histJetPhi = new TH1F("Jet_Phi", "Jet_Phi", 50, 0, 7);
   TH1 *histGenJetPT = new TH1F("GenJet_PT", "GenJet_P{T}", 100, 0.0, 100.0);
-
+  TH1 *JetMass = new TH1F("JetMass","Jet Mass",200, -100, 200);
 
   for(Int_t i=0; i < numberOfEntries; i++)
     {
@@ -65,7 +65,9 @@ void JetAnalysis(const char *intputFile)
 
 	    Jet *jet = (Jet*) branchJet->At(j);
 	    histJetPT->Fill(jet->PT);
-	    cout << jet->PT << endl;
+	    cout << "Jet Mass: " << jet->Mass << endl;
+	    JetMass->Fill(jet->Mass);
+	    //	    cout << jet->PT << endl;
 	    // ScalarHT *ht = (ScalarHT*) branchScalarHT->At(j);
 	    // cout << ht->HT << endl;
   }
@@ -75,8 +77,9 @@ void JetAnalysis(const char *intputFile)
 
     }
 
-  TFile *JetAnalysis = new TFile("JetAnalysis.root","RECREATE");
+  TFile *JetAnalysis = new TFile("JetAnalysisMG5.root","RECREATE");
   histJetPT->Write();
+  JetMass->Write();
   //histGenJetPT->Write();
 
 }
