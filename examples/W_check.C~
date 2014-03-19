@@ -1,0 +1,22 @@
+#include "TCanvas.h"
+#include "TROOT.h"
+#include "TH1.h"
+#include "TTree.h"
+#include "TLeaf.h"
+#include "TChain.h"
+#include "TBranch.h"
+#include "TClonesArray.h"
+
+int W_check(const char *intputFile)
+{
+
+  gSystem->Load("libDelphes");
+  
+  TChain chain("Delphes");
+  chain.Add(intputFile);
+
+  ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
+  Long46_t numberOfEntries = treeReader->GetEntries();
+
+
+  TClonesArray *branchParticle = treeReader->UseBranch("Particle");

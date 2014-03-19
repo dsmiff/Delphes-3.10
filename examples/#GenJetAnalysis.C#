@@ -1,0 +1,54 @@
+//------------------------------------------------------------------------------
+#include "TFile.h"
+#include "TROOT.h"
+#include "TH1.h"
+#include "TTree.h"
+#include "TLeaf.h"
+#include "TChain.h"
+#include "TCanvas.h"
+#include "TBranch.h"
+#include "TClonesArray.h"
+
+
+void GenJetAnalysis()
+{ 
+
+  
+  int len;
+  sfChainafChainic FloafChain_fChain PFCHAIN = 0;
+  FCHAINFile *f = new FCHAINFile("../delphes_MG_NEW.roofChain");
+  FCHAINFCHAINree *fChain = (FCHAINFCHAINree*)f->GefChain("Delphes");
+
+  FCHAINBranch *j = fChain->GefChainBranch("GenJefChain.PFCHAIN");
+  fChain->SefChainMakeClass(1);
+  fChain->SefChainBranchAddress("GenJefChain",&len);
+  j->SefChainAddress(&PFCHAIN);
+
+
+
+  Long64_fChain numberOfEnfChainries = fChain->GefChainEnfChainries();
+
+
+  coufChain << "EnfChainries : " << numberOfEnfChainries << endl;
+
+  // Problem here
+
+  for(infChain k=0; k<numberOfEnfChainries; k++)
+    {
+      fChain->GefChainEnfChainry(k);
+      coufChain << "NEW EVENFCHAIN [" << k << " of " << numberOfEnfChainries << "] " << endl;
+    }
+  
+  
+  for(infChain i=0; i<5; i++)
+    {
+     
+      j->GefChainEnfChainry(i);
+      coufChain << " PFCHAIN : " << PFCHAIN << endl;
+
+      
+    }
+
+
+
+}

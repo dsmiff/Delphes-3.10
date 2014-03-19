@@ -227,17 +227,21 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
       if(Ehad > 0.0 && tower->Ehad > 0.0) plots->fTowerDeltaEhad->Fill((Ehad - tower->Ehad)/Ehad);
     }
 
-    // Loop over all jets in event
+    // Loop over all jets in event. Up to here successfully returns the PT of ecah jet per event 
     for(i = 0; i < branchJet->GetEntriesFast(); ++i)
     {
       jet = (Jet*) branchJet->At(i);
 
       momentum.SetPxPyPzE(0.0, 0.0, 0.0, 0.0);
 
+      //      std::cout << jet->PT << std::endl;
+
       // Loop over all jet's constituents
       for(j = 0; j < jet->Constituents.GetEntriesFast(); ++j)
       {
         object = jet->Constituents.At(j);
+
+
 
         // Check if the constituent is accessible
         if(object == 0) continue;
@@ -245,18 +249,22 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
         if(object->IsA() == GenParticle::Class())
         {
           momentum += ((GenParticle*) object)->P4();
-        }
+	  //	  	  std::cout << "momentum: " << momentum << std::endl;
+	}
         else if(object->IsA() == Track::Class())
         {
           momentum += ((Track*) object)->P4();
+	  //  std::cout << "momentum2: " << momentum << std::endl;
         }
         else if(object->IsA() == Tower::Class())
         {
           momentum += ((Tower*) object)->P4();
+	  // std::cout << "momentum3 : " << momentum << std::endl;
         }
         else if(object->IsA() == Muon::Class())
         {
           momentum += ((Muon*) object)->P4();
+	  //  std::cout << "momentum4: " << momentum << std::endl;
         }
       }
       plots->fJetDeltaPT->Fill((jet->PT - momentum.Pt())/jet->PT );

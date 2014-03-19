@@ -1,0 +1,37 @@
+#include "TH1.h"
+#include "TROOT.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TLeaf.h"
+#include "TCanvas.h"
+#include "TChain.h"
+#include "TBranch.h"
+#include "TClonesArray.h"
+
+void JetMultiplicities(const char *intputFile)
+{
+
+  gSystem->Load("libDelphes");
+  
+  TChain chain("Delphes");
+  chain.Add(intputFile);
+
+  ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
+  Long64_t nentries = treeReader->GetEntries();
+
+  TClonesArray* branchJet = treeReader->UseBranch("Jet");
+  
+
+  for(Int_t i=0; i <nentries; i++)
+    {
+      treeReader->ReadEntry(i);
+      
+      cout << "\n###########################" << endl;
+      cout << "\nNEW EVENT [" << i << "]" << endl;
+
+ 
+
+    }
+
+}
+ 

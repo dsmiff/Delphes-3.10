@@ -46,6 +46,9 @@ set ExecutionPath {
 #################################
 # Propagate particles in cylinder
 #################################
+# Shape of config file is:
+# module ModuleClass ModuleName ModuleConfigurationBody
+# set ParameterName value 
 
 module ParticlePropagator ParticlePropagator {
   set InputArray Delphes/stableParticles
@@ -273,6 +276,7 @@ module Calorimeter Calorimeter {
 ####################
 # Energy flow merger
 ####################
+# Note that muons are added to the EFlowMerger which is used for finding jets - corrected in UniqueObjectFinder
 
 module Merger EFlowMerger {
 # add InputArray InputArray
@@ -283,7 +287,7 @@ module Merger EFlowMerger {
 }
 
 ###################
-# Photon efficiency
+# Photon efficieency
 ###################
 
 module Efficiency PhotonEfficiency {
@@ -424,8 +428,9 @@ module FastJetFinder GenJetFinder {
 }
 
 ############
-# Jet finder
+# Jet finder - why is Calorimeter/towers commented out?
 ############
+
 
 module FastJetFinder FastJetFinder {
 #  set InputArray Calorimeter/towers
@@ -437,7 +442,7 @@ module FastJetFinder FastJetFinder {
   set JetAlgorithm 6
   set ParameterR 0.5
 
-  # Why is this 20 when FastJetFinder (Delphes-3.10/modules/FastJetFinder.cc) ƒsays it's 10?
+
   set JetPTMin 20.0
 }
 

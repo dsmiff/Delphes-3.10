@@ -1,0 +1,57 @@
+void pdgCodes(const char *intputFile)
+{
+
+  gSystem->Load("libDelphes");
+  
+  TChain chain("Delphes");
+  chain.Add(intputFile);
+  
+  ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
+  Long64_t numberOfEntries = treeReader->GetEntries();
+  
+  TClonesArray *branchParticle = treeReader->UseBranch("Particle");
+  TClonesArray *branchScalarHT = treeReader->UseBranch("ScalarHT");
+
+  TH1F *histScalarHT = new TH1F("ScalarHT","ScalarHT",200, 0, 2600);
+  
+  
+  GenParticle *particle;
+
+  
+  Int_t nw = 0;
+  Int_t nb = 0;
+
+  for(Int_t i=0; i<numberOfEntries; i++)
+    {
+      treeReader->ReadEntry(i);
+      
+      cout << " " << endl;
+      cout << "NEW ENTRY [" << i << "]" << endl;
+      cout << "" << endl;
+
+      for(Int_t j=0; j < branchParticle->GetEntriesFast(); j++)
+	{
+	  Int_t count = 0;
+	  
+	  particle = (GenParticle*) branchParticle->At(j);
+	  pdgCode = TMath::Abs(particle->PID);
+
+	  if(pdgCode == 24){
+	    cout << "Found a W boson!" << endl;
+	  }
+	
+
+	}
+
+      for(Int_t k=0; k < branchScalarHT->GetEntriesFast(); k++)
+	{
+	  ScalarHT *scalarht = (ScalarHT*) branchScalarHT->At(k);
+	  cout << "Scalar HT: " << scalarht->HT << endl;
+	  histScalarHT->Fill(scalarht->HT);
+	}
+    }
+
+  TFile *ScalarHT = new TFile("JustScalarHT_500_100.root","RECREATE");
+  histScalarHT->Write();
+
+}
