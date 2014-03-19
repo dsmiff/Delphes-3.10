@@ -86,7 +86,7 @@ void FastJetFinder::Init()
 
   fJetPTMin = GetDouble("JetPTMin", 10.0);
 
-  // ---  Jet Area Parameters --- Can find these values in delphes_card_CMS_PileUp.tcl
+  // ---  Jet Area Parameters ---
   fAreaAlgorithm = GetInt("AreaAlgorithm", 0);
   fComputeRho = GetBool("ComputeRho", false);
   fRhoEtaMax = GetDouble("RhoEtaMax", 5.0);

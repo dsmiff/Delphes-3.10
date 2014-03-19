@@ -131,7 +131,7 @@ void Merger::Process()
   
   candidate->Position.SetXYZT(0.0, 0.0, 0.0, 0.0);
   candidate->Momentum = momentum;
-  
+   
   fMomentumOutputArray->Add(candidate);
 
   candidate = factory->NewCandidate();
