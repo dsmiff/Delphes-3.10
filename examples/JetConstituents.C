@@ -1,138 +1,176 @@
+/*
+root -l examples/Example3.C\(\"delphes_output.root\"\)
+*/
+
+//------------------------------------------------------------------------------
+
+struct TestPlots
+{
+  TH1 *_JetPT;
+  TH1 *_SubJetPT;
+  TH1 *_SubJetPT2;
+
+};
+
+//------------------------------------------------------------------------------
+
 class ExRootResult;
 class ExRootTreeReader;
 
+//------------------------------------------------------------------------------
 
-void AnalyseEvents(ExRootTreeReader *treeReader)
+void BookHistograms(ExRootResult *result, TestPlots *plots)
 {
+  TLegend *legend;
+  TPaveText *comment;
 
+
+  plots->_JetPT = result->AddHist1D(
+    "jet pt", "Jet P_{T}","Jet P_{T}", "Events",
+    100, 0.0, 1000);
+
+  plots->_SubJetPT = result->AddHist1D("subjet1 pt", "subjet1 pt", "P_{T}", "Events", 100, 0.0, 1000);
+  plots->_SubJetPT2 = result->AddHist1D("subjet2 pt", "subjet2 pt", "P_{T}", "Events", 100, 0.0, 1000);
+}
+
+//------------------------------------------------------------------------------
+
+void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
+{
   TClonesArray *branchParticle = treeReader->UseBranch("Particle");
   TClonesArray *branchElectron = treeReader->UseBranch("Electron");
   TClonesArray *branchPhoton = treeReader->UseBranch("Photon");
   TClonesArray *branchMuon = treeReader->UseBranch("Muon");
 
-  // Pick out branches used in reco jet finding
-
-  TClonesArray *branchEFlowTrack = treeReader->UseBranch("EFlowTrack");   
-  TClonesArray *branchEFlowTower = treeReader->UseBranch("EFlowTower");
-  TClonesArray *branchEFlowMuon = treeReader->UseBranch("EFlowMuon");   // Muons get filtered out in Unique object finding so should be included in jet finding
- 
-  // Pick out reco jet branch
-  
+  TClonesArray *branchEFlowTrack = treeReader->UseBranch("EFlowTrack");  // These 3 are used in finding reco jets
+  TClonesArray *branchEFlowTower = treeReader->UseBranch("EFlowTower");  // 
+  TClonesArray *branchEFlowMuon = treeReader->UseBranch("EFlowMuon");    // 
   TClonesArray *branchJet = treeReader->UseBranch("Jet");
-  
-  Long64_t allEntries = treeReader->GetEntries();
-  
-  std::cout << " ** Chain contains: " << allEntries << " events" << std::endl;
+
+  //  Long64_t allEntries = treeReader->GetEntries();
+    Long64_t allEntries = 1000;
+
+
+  cout << "** Chain contains " << allEntries << " events" << endl;
 
   GenParticle *particle;
   Electron *electron;
   Photon *photon;
   Muon *muon;
-  
+
   Track *track;
   Tower *tower;
 
   Jet *jet;
+  Jet *subjet[2];
   TObject *object;
-
+  TObjArray *objects[2]; 
 
   TLorentzVector momentum;
 
+
+
   // Loop over all events
-  
-  for(Long64_t entry = 0; entry < allEntries; entry++)
+  for(Long64_t entry = 0; entry < allEntries; ++entry)
+  {
+    // Load selected branches with data from specified event
+    treeReader->ReadEntry(entry);
+
+    std::cout << "\n ** NEW ENTRY ** : " << entry << std::endl;
+
+    // Loop over all jets in event. Up to here successfully returns the PT of ecah jet per event 
+    for(i = 0; i < branchJet->GetEntriesFast(); ++i)
     {
-      treeReader->ReadEntry(entry);
-      std::cout << "\n** NEW ENTRY ** : " << entry << std::endl;
       
+      std::cout << "\nNew jet" << std::endl;
 
-      // Loop over jets
+      jet = (Jet*) branchJet->At(i);
 
-      for(Int_t i =0; i < branchJet->GetEntriesFast(); ++i)
-	{
+      momentum.SetPxPyPzE(0.0, 0.0, 0.0, 0.0);
 
-	  std::cout << "New jet" << std::endl;
-	  
-	  jet = (Jet*) branchJet->At(i);
-	  
-	  momentum.SetPxPyPzE(0.0,0.0,0.0,0.0);
-	  
-	  // Number of constituents per jet:
-	  
-	  std::cout << "# Constituents: " << jet->Constituents.GetEntriesFast() << std::endl;
+      std::cout << "Jet Constituents: " << jet->Constituents.GetEntriesFast() << std::endl;
+
+      plots->_JetPT->Fill(jet->PT);
 
 
-     // Loop over jet constituents
 
-      for(Int_t j=0; j < jet->Constituents.GetEntriesFast(); ++j)
-	{
-	  object = jet->Constituents.At(j);
-	  
+      // Loop over all jet's constituents
+      for(j = 0; j < jet->Constituents.GetEntriesFast(); ++j)
+      {
+        object = jet->Constituents.At(j);
 
 
-	  if(object == 0) continue;
+
+        // Check if the constituent is accessible, if object exists then continue
+        if(object == 0) continue;
 	
-	  // Sieve out what the constituent is: a track, tower, or muon (expect not here)
-	  // Bare in mind this doesn't tell us what the constituent is, only how the jet was constructed given the 'type' of constituent
-	  if(object->IsA() == GenParticle::Class())
-	    {
-	      momentum += ((GenParticle*) object)->P4();
-	      std::cout << "momentum:" << momentum.Pt() << std::endl;
-	    }
-	  else if(object->IsA() == Track::Class())
-	    {
-	      momentum += ((Track*) object)->P4();
-	      std::cout << "momentum2: " << momentum.Pt() << std::endl;
-	    }
-	  else if(object->IsA() == Tower::Class())
-	    {
-	      momentum += ((Tower*) object)->P4();
-	      std::cout << "momentum3 :" << momentum.Pt() << std::endl;
-	    }
-	  else if(object->IsA() == Muon::Class())
-	    {
-	      momentum += ((Muon*) object)->P4();
-	      std::cout << "momentum4: " << momentum.Pt() << std::endl;
-	    }
+
+        if(object->IsA() == GenParticle::Class())
+        {
+          momentum += ((GenParticle*) object)->P4();
+	  std::cout << "momentum:" << momentum.Pt() << std::endl;
 	}
-      
-      std::cout << "Jet PT: " << jet->PT << std::endl;
-      // Now compare PT of constituent type against PT of jet
-      // Note that the jets have been passed through the energy scaling module, whereas the tracks and towers have not
-      // This will no doubt yield different values. Can check by removing scale factor (1.08) to orignal jet
-
-      Double_t diffPT = TMath::Abs(jet->PT - momentum.Pt());
-      std::cout << "Diff in PT: " << diffPT << std::endl;
-
-  // To get PID of jet constituents could try something like:
-  /*
-  for(Int_t k=0; k < jet->Particles.GetEntriesFast(); ++k)
-    {
-
-      particle = (GenParticle*) jet->Particle.At(k);
-      std::cout << "PID of jet constituents: "<< ((GenParticle*) particle)->PID << std::endl;
-
-    }*/
+        else if(object->IsA() == Track::Class())
+        {
+          momentum += ((Track*) object)->P4();
+	  std::cout << "momentum2: " << momentum.Pt() << std::endl;
+        }
+        else if(object->IsA() == Tower::Class())
+        {
+          momentum += ((Tower*) object)->P4();
+	  std::cout << "momentum3 :" << momentum.Pt() << std::endl;
+	  plots->_SubJetPT->Fill(momentum.Pt());
 	}
+        else if(object->IsA() == Muon::Class())
+        {
+          momentum += ((Muon*) object)->P4();
+	  std::cout << "momentum4: " << momentum.Pt() << std::endl;
+        }
+      }
+      std::cout << "Jet PT : " << jet->PT << std::endl;
+
     }
+  }
+}
 
+//------------------------------------------------------------------------------
+
+void PrintHistograms(ExRootResult *result, TestPlots *plots)
+{
+  result->Print("png");
+  std::cout << "JetPT entries: " << plots->_JetPT->GetEntries() << std::endl;
+  std::cout << "Subjet entries: " << plots->_SubJetPT->GetEntries() << std::endl;
 
 }
 
+//------------------------------------------------------------------------------
 
-
-
-int JetConstituents(const char *inputFile)
+void JetConstituents(const char *inputFile)
 {
   gSystem->Load("libDelphes");
 
   TChain *chain = new TChain("Delphes");
   chain->Add(inputFile);
-  
+
   ExRootTreeReader *treeReader = new ExRootTreeReader(chain);
   ExRootResult *result = new ExRootResult();
 
-  AnalyseEvents(treeReader);
+  TestPlots *plots = new TestPlots;
+
+  BookHistograms(result, plots);
+
+  AnalyseEvents(treeReader, plots);
+
+  PrintHistograms(result, plots);
+
+  result->Write("results.root");
+
+  cout << "** Exiting..." << endl;
+
+  delete plots;
+  delete result;
+  delete treeReader;
+  delete chain;
 }
 
-
+//------------------------------------------------------------------------------
