@@ -68,10 +68,19 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   TObject *object;
   TObjArray *objects[2];
 
-  TLorentzVector momentum;
-  //  TLorentzVector momentum2;
-  std::vector<TLorentzVector> Subjets;
+  TLorentzVector genparticles;
+  TLorentzVector towers;
+  TLorentzVector tracks;
+  TLorentzVector muons;
 
+  TLorentzVector momentum;
+  TLorentzVector momentum2;
+  std::vector<TLorentzVector> Subjets;
+  std::vector<TLorentzVector> GenParticleMomenta;
+  std::vector<TLorentzVector> TowerMomenta;
+  std::vector<TLorentzVector> TrackMomenta;
+  std::vector<TLorentzVector> MuonMomenta;
+  
 
   // Loop over all events
   for(Long64_t entry = 0; entry < allEntries; ++entry)
@@ -89,8 +98,12 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
 
       jet = (Jet*) branchJet->At(i);
 
-      momentum.SetPxPyPzE(0.0, 0.0, 0.0, 0.0);
-      //  momentum2.SetPxPyPzE(0.0,0.0,0.0,0.0);
+
+      genparticles.SetPxPyPzE(0.0,0.0,0.0,0.0);
+      towers.SetPxPyPzE(0.0,0.0,0.0,0.0);
+      tracks.SetPxPyPzE(0.0,0.0,0.0,0.0);
+      muons.SetPxPyPzE(0.0,0.0,0.0,0.0);
+
 
       std::cout << "Jet Constituents: " << jet->Constituents.GetEntriesFast() << std::endl;
 
@@ -114,38 +127,44 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
 
         if(object->IsA() == GenParticle::Class())
         {
-          momentum += ((GenParticle*) object)->P4();
-	  std::cout << "momentum:" << momentum.Pt() << std::endl;
+          genparticles += ((GenParticle*) object)->P4();
+	  std::cout << "gen particles momentum:" << genparticles.Pt() << std::endl;
 	}
         else if(object->IsA() == Track::Class())
         {
-          momentum += ((Track*) object)->P4();
-	  std::cout << "momentum2: " << momentum.Pt() << std::endl;
+          tracks += ((Track*) object)->P4();
+	  std::cout << "track momentum: " << tracks.Pt() << std::endl;
         }
         else if(object->IsA() == Tower::Class())
         {
-          momentum += ((Tower*) object)->P4();
-	  std::cout << "momentum3 :" << momentum.Pt() << std::endl;
-	  //  plots->_SubJetPT->Fill(momentum.Pt());
-	  //	  Subjets.push_back(momentum);
+          towers += ((Tower*) object)->P4();
+	  std::cout << "tower momentum :" << towers.Pt() << std::endl;	
 	}
         else if(object->IsA() == Muon::Class())
         {
-          momentum += ((Muon*) object)->P4();
-	  std::cout << "momentum4: " << momentum.Pt() << std::endl;
+          muons += ((Muon*) object)->P4();
+	  std::cout << "muon momentum: " << muons.Pt() << std::endl;
         }
+	
 
-	Subjets.push_back(momentum);
+	GenParticleMomenta.push_back(genparticles);
+	TrackMomenta.push_back(tracks);
+	TowerMomenta.push_back(towers);
+	MuonMomenta.push_back(muons);
+	 
       }
      
-        std::cout << "PT: " << Subjets.at(0).Pt() << std::endl;
+        std::cout << "Tower momenta: " << TowerMomenta.at(0).Pt() << std::endl;
        	std::cout << "Jet PT : " << jet->PT << std::endl;
       
-	Subjets.clear();
+	plots->_SubJetPT2->Fill(TowerMomenta.at(0).Pt());
+	
+	TowerMomenta.clear();
+	TrackMomenta.clear();
+	MuonMomenta.clear();
+	GenParticleMomenta.clear();
     }
   
-
-
 
 
   }
