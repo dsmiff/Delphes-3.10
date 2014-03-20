@@ -1,8 +1,6 @@
-/*
-root -l examples/Example3.C\(\"delphes_output.root\"\)
-*/
-
-//------------------------------------------------------------------------------
+#include "TLorentzVector.h"
+#include <vector>
+#include <algorithm>
 
 struct TestPlots
 {
@@ -11,6 +9,9 @@ struct TestPlots
   TH1 *_SubJetPT2;
 
 };
+
+
+
 
 //------------------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ void BookHistograms(ExRootResult *result, TestPlots *plots)
 
 void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
 {
+
   TClonesArray *branchParticle = treeReader->UseBranch("Particle");
   TClonesArray *branchElectron = treeReader->UseBranch("Electron");
   TClonesArray *branchPhoton = treeReader->UseBranch("Photon");
@@ -64,10 +66,11 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   Jet *jet;
   Jet *subjet[2];
   TObject *object;
-  TObjArray *objects[2]; 
+  TObjArray *objects[2];
 
   TLorentzVector momentum;
-
+  //  TLorentzVector momentum2;
+  std::vector<TLorentzVector> Subjets;
 
 
   // Loop over all events
@@ -87,6 +90,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
       jet = (Jet*) branchJet->At(i);
 
       momentum.SetPxPyPzE(0.0, 0.0, 0.0, 0.0);
+      //  momentum2.SetPxPyPzE(0.0,0.0,0.0,0.0);
 
       std::cout << "Jet Constituents: " << jet->Constituents.GetEntriesFast() << std::endl;
 
@@ -99,9 +103,12 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
       {
         object = jet->Constituents.At(j);
 
-
+	
 
         // Check if the constituent is accessible, if object exists then continue
+	// Would want to push the different momentum TLorentzVectors into a vector
+
+
         if(object == 0) continue;
 	
 
@@ -119,17 +126,28 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
         {
           momentum += ((Tower*) object)->P4();
 	  std::cout << "momentum3 :" << momentum.Pt() << std::endl;
-	  plots->_SubJetPT->Fill(momentum.Pt());
+	  //  plots->_SubJetPT->Fill(momentum.Pt());
+	  //	  Subjets.push_back(momentum);
 	}
         else if(object->IsA() == Muon::Class())
         {
           momentum += ((Muon*) object)->P4();
 	  std::cout << "momentum4: " << momentum.Pt() << std::endl;
         }
-      }
-      std::cout << "Jet PT : " << jet->PT << std::endl;
 
+	Subjets.push_back(momentum);
+      }
+     
+        std::cout << "PT: " << Subjets.at(0).Pt() << std::endl;
+       	std::cout << "Jet PT : " << jet->PT << std::endl;
+      
+	Subjets.clear();
     }
+  
+
+
+
+
   }
 }
 
@@ -171,6 +189,9 @@ void JetConstituents(const char *inputFile)
   delete result;
   delete treeReader;
   delete chain;
+
+
+
 }
 
 //------------------------------------------------------------------------------
