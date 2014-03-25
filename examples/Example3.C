@@ -108,12 +108,13 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   TClonesArray *branchPhoton = treeReader->UseBranch("Photon");
   TClonesArray *branchMuon = treeReader->UseBranch("Muon");
 
-  TClonesArray *branchEFlowTrack = treeReader->UseBranch("EFlowTrack");
-  TClonesArray *branchEFlowTower = treeReader->UseBranch("EFlowTower");
-  TClonesArray *branchEFlowMuon = treeReader->UseBranch("EFlowMuon");
+  TClonesArray *branchEFlowTrack = treeReader->UseBranch("EFlowTrack");  // These 3 are used in finding reco jets
+  TClonesArray *branchEFlowTower = treeReader->UseBranch("EFlowTower");  // 
+  TClonesArray *branchEFlowMuon = treeReader->UseBranch("EFlowMuon");    // 
   TClonesArray *branchJet = treeReader->UseBranch("Jet");
 
-  Long64_t allEntries = treeReader->GetEntries();
+  //  Long64_t allEntries = treeReader->GetEntries();
+  Long64_t allEntries = 1000;
 
   cout << "** Chain contains " << allEntries << " events" << endl;
 
@@ -142,6 +143,8 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   {
     // Load selected branches with data from specified event
     treeReader->ReadEntry(entry);
+
+    std::cout << "\n ** NEW ENTRY ** : " << entry << std::endl;
 
     // Loop over all electrons in event
     for(i = 0; i < branchElectron->GetEntriesFast(); ++i)
@@ -230,6 +233,9 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
     // Loop over all jets in event. Up to here successfully returns the PT of ecah jet per event 
     for(i = 0; i < branchJet->GetEntriesFast(); ++i)
     {
+      
+      std::cout << "\nNew jet" << std::endl;
+
       jet = (Jet*) branchJet->At(i);
 
       momentum.SetPxPyPzE(0.0, 0.0, 0.0, 0.0);
@@ -243,30 +249,32 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
 
 
 
-        // Check if the constituent is accessible
+        // Check if the constituent is accessible, if object exists then continue
         if(object == 0) continue;
+	
 
         if(object->IsA() == GenParticle::Class())
         {
           momentum += ((GenParticle*) object)->P4();
-	  //	  	  std::cout << "momentum: " << momentum << std::endl;
+	  std::cout << "momentum:" << momentum.Pt() << std::endl;
 	}
         else if(object->IsA() == Track::Class())
         {
           momentum += ((Track*) object)->P4();
-	  //  std::cout << "momentum2: " << momentum << std::endl;
+	  std::cout << "momentum2: " << momentum.Pt() << std::endl;
         }
         else if(object->IsA() == Tower::Class())
         {
           momentum += ((Tower*) object)->P4();
-	  // std::cout << "momentum3 : " << momentum << std::endl;
+	  std::cout << "momentum3 :" << momentum.Pt() << std::endl;
         }
         else if(object->IsA() == Muon::Class())
         {
           momentum += ((Muon*) object)->P4();
-	  //  std::cout << "momentum4: " << momentum << std::endl;
+	  std::cout << "momentum4: " << momentum.Pt() << std::endl;
         }
       }
+      std::cout << "Jet PT : " << jet->PT << std::endl;
       plots->fJetDeltaPT->Fill((jet->PT - momentum.Pt())/jet->PT );
     }
   }

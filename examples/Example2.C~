@@ -32,12 +32,12 @@ void BookHistograms(ExRootResult *result, MyPlots *plots)
   plots->fJetPT[0] = result->AddHist1D(
     "jet_pt_0", "leading jet P_{T}",
     "jet P_{T}, GeV/c", "number of jets",
-    100, 0.0, 1000.0);
+    50, 0.0, 100.0);
 
   plots->fJetPT[1] = result->AddHist1D(
     "jet_pt_1", "2nd leading jet P_{T}",
     "jet P_{T}, GeV/c", "number of jets",
-    100, 0.0, 1000.0);
+    50, 0.0, 100.0);
 
   plots->fJetPT[0]->SetLineColor(kRed);
   plots->fJetPT[1]->SetLineColor(kBlue);

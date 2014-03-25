@@ -16,7 +16,7 @@ int W_check(const char *intputFile)
   chain.Add(intputFile);
 
   ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
-  Long46_t numberOfEntries = treeReader->GetEntries();
+  Long46_t numberOfEntries = chain->GetEntries();
 
 
   TClonesArray *branchParticle = treeReader->UseBranch("Particle");

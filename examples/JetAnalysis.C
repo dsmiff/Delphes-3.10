@@ -95,7 +95,7 @@ void JetAnalysis(const char *intputFile)
 
     }
 
-  TFile *JetAnalysis = new TFile("JetAnalysisEflow.root","RECREATE");
+  TFile *JetAnalysis = new TFile("JetAnalysis.root","RECREATE");
   histJetPT->Write();
   JetMass->Write();
   JetMassvsPT->Write();

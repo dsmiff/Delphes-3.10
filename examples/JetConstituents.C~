@@ -182,7 +182,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
       }
      
       //        std::cout << "Tower momenta: " << TowerMomenta.at(0).Pt() << std::endl;
-      //       	std::cout << "Jet PT : " << jet->PT << std::endl;
+       	std::cout << "Jet PT : " << jet->PT << std::endl;
 	/*
 	if(TowerMomenta.at(1).Pt() > 0){ 
 	std::cout << "Tower 2 momentum: " << TowerMomenta.at(1).Pt() << std::endl;

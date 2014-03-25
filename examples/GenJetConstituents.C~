@@ -22,7 +22,7 @@ void BookHistograms(ExRootResult *result, TestPlots *plots)
   TPaveText *comment;
 
   plots->_GenJetPT = result->AddHist1D("Gen jet P_{T}","Gen jet P_{T}","Gen jet P_{T}", "Events", 100, 0, 1000);
-  plots->_Constituents = result->AddHist1D("Constituentst","constituents","# constituents", "Events", 10, 0.0, 10);
+  plots->_Constituents = result->AddHist1D("Number of constituents per jet","# constituents","# constituents", "Events", 10, 0.0, 10);
 
 }
 
